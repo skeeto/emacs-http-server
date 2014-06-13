@@ -139,10 +139,10 @@
   :group 'simple-httpd
   :type 'symbol)
 
-(defcustom httpd-host nil
+(defcustom httpd-host "localhost"
   "Web server host name used by `make-network-process'."
   :group 'simple-httpd
-  :type 'symbol)
+  :type 'string)
 
 (defcustom httpd-port 8080
   "Web server port."
@@ -294,6 +294,15 @@ instance per Emacs instance."
     (delete-process "httpd")
     (httpd-log `(stop ,(current-time-string)))
     (run-hooks 'httpd-stop-hook)))
+
+;;;###autoload
+(defun httpd-serve-dir (dir)
+  "Start the web server with given `dir' as httpd-root."
+  (interactive "DServe directory: \n")
+  (setq httpd-root dir)
+  (httpd-start)
+  (message "Started the web server on %s:%d, pointing to: %s"
+	   httpd-host httpd-port dir))
 
 (defun httpd-batch-start ()
   "Never returns, holding the server open indefinitely for batch mode.
