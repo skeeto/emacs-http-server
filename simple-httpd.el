@@ -139,10 +139,10 @@
   :group 'simple-httpd
   :type 'symbol)
 
-(defcustom httpd-host nil
+(defcustom httpd-host "localhost"
   "Web server host name used by `make-network-process'."
   :group 'simple-httpd
-  :type 'symbol)
+  :type 'string)
 
 (defcustom httpd-port 8080
   "Web server port."
