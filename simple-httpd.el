@@ -748,7 +748,7 @@ Extra headers can be sent by supplying them like keywords, i.e.
         (headers `(("Server" . ,httpd-server-name)
                    ("Date" . ,(httpd-date-string))
                    ("Connection" . "keep-alive")
-                   ("Content-Type" . ,(httpd--stringify mime))
+                   ("Content-Type" . ,(concat (httpd--stringify mime) "; charset=utf-8"))
                    ("Content-Length" . ,(httpd--buffer-size)))))
     (unless httpd--header-sent
       (setf httpd--header-sent t)
