@@ -738,7 +738,26 @@ element is the fragment."
       (httpd-serve-root proc httpd-root uri-path request)
     (httpd-error proc 403)))
 
-(defun httpd-get-mime (ext)
+(defun httpd-get-mime (ext &optional buffer-name)
+  "Combine MIME type and charset into MIME value."
+  (let ((mime-type (httpd-get-mime-type ext))
+        (mime-charset (httpd-get-mime-charset buffer-name)))
+    (if mime-charset
+        (concat mime-type ";charset=" mime-charset)
+      mime-type)))
+
+(defun httpd-get-mime-charset (&optional buffer-name)
+  "Let Emacs guess a reasonable MIME charset parameter for buffer."
+  (with-current-buffer (or buffer-name (current-buffer))
+    (let ((type (coding-system-type buffer-file-coding-system)))
+      (cond
+       ((eq type 'utf-8) "utf-8")
+       ((eq type 'charset)
+        (symbol-name (fst (coding-system-charset-list buffer-file-coding-system))))
+       ((eq type 'undecided) nil)
+       (t nil)))))
+
+(defun httpd-get-mime-type (ext)
   "Fetch MIME type given the file extention."
   (or (and ext (cdr (assoc (downcase ext) httpd-mime-types)))
       "application/octet-stream"))
@@ -797,7 +816,7 @@ the `httpd-current-proc' as the process."
           (httpd-send-header proc "text/plain" 304))
       (httpd-log `(file ,path))
       (with-temp-buffer
-        (set-buffer-multibyte nil)
+        (set-buffer-multibyte t) ;; Required to be able to guess MIME charset
         (insert-file-contents path)
         (httpd-send-header proc (httpd-get-mime (file-name-extension path))
                            200 :Last-Modified mtime :ETag etag)))))
