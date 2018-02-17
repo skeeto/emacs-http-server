@@ -753,7 +753,7 @@ element is the fragment."
       (cond
        ((eq type 'utf-8) "utf-8")
        ((eq type 'charset)
-        (symbol-name (fst (coding-system-charset-list buffer-file-coding-system))))
+        (symbol-name (car (coding-system-charset-list buffer-file-coding-system))))
        ((eq type 'undecided) nil)
        (t nil)))))
 
